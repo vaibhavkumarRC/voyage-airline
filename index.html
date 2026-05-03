@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VOYAGE Airlines — Fly Beyond Limits</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a class="nav-logo" href="#" onclick="showPage('home')">
+      <i class="fas fa-paper-plane"></i> VOYAGE
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" onclick="showPage('home')">Home</a></li>
+      <li><a href="#" onclick="showPage('results')">Flights</a></li>
+      <li><a href="#" onclick="showPage('dashboard')">Manage Booking</a></li>
+      <li><a href="#deals">Deals</a></li>
+      <li><a href="#" onclick="showPage('login')" class="btn-nav-login">Login</a></li>
+      <li><a href="#" onclick="showPage('login')" class="btn-nav-signup">Sign Up</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ================================================================
+     PAGE: HOME
+================================================================ -->
+<div id="page-home" class="page active">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-tag"><i class="fas fa-star"></i> #1 Rated Airline Booking Platform</p>
+      <h1>Fly Beyond<br><span>Every Limit</span></h1>
+      <p class="hero-sub">Discover the world with comfort, style, and unbeatable fares. Over 500 destinations worldwide.</p>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <div class="trip-toggle">
+        <button class="trip-btn active" id="btn-oneway" onclick="setTrip('oneway')">One Way</button>
+        <button class="trip-btn" id="btn-roundtrip" onclick="setTrip('roundtrip')">Round Trip</button>
+        <button class="trip-btn" id="btn-multicity" onclick="setTrip('multicity')">Multi-City</button>
+      </div>
+      <div class="search-form" id="searchForm">
+        <div class="search-row">
+          <div class="search-field airport-field">
+            <label><i class="fas fa-plane-departure"></i> From</label>
+            <input type="text" id="fromCity" placeholder="City or Airport" autocomplete="off"/>
+            <span class="field-tag" id="fromTag"></span>
+            <div id="fromDropdown" class="airport-dropdown"></div>
+          </div>
+          <button class="swap-btn" onclick="swapCities()"><i class="fas fa-exchange-alt"></i></button>
+          <div class="search-field airport-field">
+            <label><i class="fas fa-plane-arrival"></i> To</label>
+            <input type="text" id="toCity" placeholder="City or Airport" autocomplete="off"/>
+            <span class="field-tag" id="toTag"></span>
+            <div id="toDropdown" class="airport-dropdown"></div>
+          </div>
+          <div class="search-field">
+            <label><i class="fas fa-calendar"></i> Departure</label>
+            <input type="date" id="depDate" />
+          </div>
+          <div class="search-field" id="retDateField" style="display:none">
+            <label><i class="fas fa-calendar-check"></i> Return</label>
+            <input type="date" id="retDate" />
+          </div>
+          <div class="search-field passenger-field" onclick="togglePassengerDropdown()">
+            <label><i class="fas fa-users"></i> Travellers & Class</label>
+            <div class="pax-display" id="paxDisplay">1 Adult · Economy</div>
+            <div class="passenger-dropdown" id="passengerDropdown">
+              <div class="pax-row">
+                <div>
+                  <div class="pax-label">Adults</div>
+                  <div class="pax-sub">12+ years</div>
+                </div>
+                <div class="pax-counter">
+                  <button onclick="changePax('adult',-1,event)">−</button>
+                  <span id="adultCount">1</span>
+                  <button onclick="changePax('adult',1,event)">+</button>
+                </div>
+              </div>
+              <div class="pax-row">
+                <div>
+                  <div class="pax-label">Children</div>
+                  <div class="pax-sub">2–11 years</div>
+                </div>
+                <div class="pax-counter">
+                  <button onclick="changePax('child',-1,event)">−</button>
+                  <span id="childCount">0</span>
+                  <button onclick="changePax('child',1,event)">+</button>
+                </div>
+              </div>
+              <div class="pax-row">
+                <div>
+                  <div class="pax-label">Infants</div>
+                  <div class="pax-sub">Under 2 years</div>
+                </div>
+                <div class="pax-counter">
+                  <button onclick="changePax('infant',-1,event)">−</button>
+                  <span id="infantCount">0</span>
+                  <button onclick="changePax('infant',1,event)">+</button>
+                </div>
+              </div>
+              <div class="class-select">
+                <label>Class</label>
+                <select id="cabinClass">
+                  <option>Economy</option>
+                  <option>Premium Economy</option>
+                  <option>Business</option>
+                  <option>First Class</option>
+                </select>
+              </div>
+              <button class="btn-apply-pax" onclick="applyPax(event)">Apply</button>
+            </div>
+          </div>
+          <button class="btn-search" onclick="searchFlights()">
+            <i class="fas fa-search"></i> Search Flights
+          </button>
+        </div>
+
+        <!-- Multi-city rows -->
+        <div id="multiCityRows" style="display:none">
+          <div class="multi-city-row">
+            <div class="search-field"><label><i class="fas fa-plane-departure"></i> From</label><input type="text" placeholder="City or Airport"/></div>
+            <div class="search-field"><label><i class="fas fa-plane-arrival"></i> To</label><input type="text" placeholder="City or Airport"/></div>
+            <div class="search-field"><label><i class="fas fa-calendar"></i> Date</label><input type="date"/></div>
+          </div>
+          <button class="btn-add-city"><i class="fas fa-plus"></i> Add Another City</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Destinations -->
+  <section class="section destinations" id="destinations">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">Explore</p>
+        <h2>Popular Destinations</h2>
+        <p>Handpicked destinations with the best flight deals this season.</p>
+      </div>
+      <div class="dest-grid">
+        <div class="dest-card" onclick="quickSearch('New Delhi','Dubai')">
+          <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80')"></div>
+          <div class="dest-info">
+            <h3>Dubai</h3>
+            <p>United Arab Emirates</p>
+            <div class="dest-price">From <strong>₹18,500</strong></div>
+          </div>
+        </div>
+        <div class="dest-card" onclick="quickSearch('New Delhi','Singapore')">
+          <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=600&q=80')"></div>
+          <div class="dest-info">
+            <h3>Singapore</h3>
+            <p>Singapore</p>
+            <div class="dest-price">From <strong>₹22,000</strong></div>
+          </div>
+        </div>
+        <div class="dest-card dest-card-lg" onclick="quickSearch('New Delhi','London')">
+          <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80')"></div>
+          <div class="dest-info">
+            <h3>London</h3>
+            <p>United Kingdom</p>
+            <div class="dest-price">From <strong>₹45,000</strong></div>
+          </div>
+        </div>
+        <div class="dest-card" onclick="quickSearch('New Delhi','New York')">
+          <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=600&q=80')"></div>
+          <div class="dest-info">
+            <h3>New York</h3>
+            <p>United States</p>
+            <div class="dest-price">From <strong>₹55,000</strong></div>
+          </div>
+        </div>
+        <div class="dest-card" onclick="quickSearch('New Delhi','Paris')">
+          <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80')"></div>
+          <div class="dest-info">
+            <h3>Paris</h3>
+            <p>France</p>
+            <div class="dest-price">From <strong>₹48,000</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deals -->
+  <section class="section deals" id="deals">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-tag">Limited Time</p>
+        <h2>Exclusive Deals</h2>
+        <p>Book now and save big on our handpicked flight deals.</p>
+      </div>
+      <div class="deals-grid">
+        <div class="deal-card">
+          <div class="deal-badge">30% OFF</div>
+          <div class="deal-route"><span>DEL</span><i class="fas fa-long-arrow-alt-right"></i><span>DXB</span></div>
+          <div class="deal-name">Delhi → Dubai</div>
+          <div class="deal-details"><i class="fas fa-calendar-alt"></i> Valid till Jun 30, 2026</div>
+          <div class="deal-price">₹12,999 <del>₹18,500</del></div>
+          <button class="btn-deal" onclick="quickSearch('New Delhi','Dubai')">Book Now</button>
+        </div>
+        <div class="deal-card deal-featured">
+          <div class="deal-badge gold">BEST VALUE</div>
+          <div class="deal-route"><span>BOM</span><i class="fas fa-long-arrow-alt-right"></i><span>LHR</span></div>
+          <div class="deal-name">Mumbai → London</div>
+          <div class="deal-details"><i class="fas fa-calendar-alt"></i> Valid till Jul 15, 2026</div>
+          <div class="deal-price">₹38,500 <del>₹55,000</del></div>
+          <button class="btn-deal" onclick="quickSearch('Mumbai','London')">Book Now</button>
+        </div>
+        <div class="deal-card">
+          <div class="deal-badge">25% OFF</div>
+          <div class="deal-route"><span>BLR</span><i class="fas fa-long-arrow-alt-right"></i><span>SIN</span></div>
+          <div class="deal-name">Bangalore → Singapore</div>
+          <div class="deal-details"><i class="fas fa-calendar-alt"></i> Valid till Jun 15, 2026</div>
+          <div class="deal-price">₹16,500 <del>₹22,000</del></div>
+          <button class="btn-deal" onclick="quickSearch('Bangalore','Singapore')">Book Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Voyage -->
+  <section class="section why-us">
+    <div class="container">
+      <div class="section-header light">
+        <p class="section-tag">Why Choose Us</p>
+        <h2>The VOYAGE Difference</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Secure Booking</h3>
+          <p>Bank-grade encryption on every transaction. Your data is always protected.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-tags"></i></div>
+          <h3>Best Price Guarantee</h3>
+          <p>Find a lower price elsewhere? We'll match it — no questions asked.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-headset"></i></div>
+          <h3>24/7 Support</h3>
+          <p>Our travel experts are available round the clock to assist you.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
+          <h3>Free Cancellation</h3>
+          <p>Flexible tickets with free cancellation up to 24 hours before departure.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo"><i class="fas fa-paper-plane"></i> VOYAGE</div>
+          <p>Your journey begins here. Discover the world with comfort, style, and unbeatable fares across 500+ destinations.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#">Book a Flight</a></li>
+            <li><a href="#">Manage Booking</a></li>
+            <li><a href="#">Check-in Online</a></li>
+            <li><a href="#">Flight Status</a></li>
+            <li><a href="#">Baggage Info</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Destinations</h4>
+          <ul>
+            <li><a href="#">Domestic Flights</a></li>
+            <li><a href="#">International Flights</a></li>
+            <li><a href="#">Holiday Packages</a></li>
+            <li><a href="#">Visa Services</a></li>
+            <li><a href="#">Travel Insurance</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Refund Policy</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 VOYAGE Airlines. All rights reserved. | Designed with <i class="fas fa-heart"></i> for seamless travel.</p>
+        <div class="payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-amex"></i>
+          <i class="fab fa-cc-paypal"></i>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ================================================================
+     PAGE: FLIGHT RESULTS
+================================================================ -->
+<div id="page-results" class="page">
+  <div class="results-header">
+    <div class="container">
+      <div class="results-search-bar">
+        <div class="route-summary" id="routeSummary">
+          <span id="rFrom">DEL</span>
+          <i class="fas fa-arrow-right"></i>
+          <span id="rTo">DXB</span>
+        </div>
+        <div class="date-summary" id="dateSummary">Sun, 15 Jun · 1 Adult · Economy</div>
+        <button class="btn-modify" onclick="showPage('home')"><i class="fas fa-edit"></i> Modify</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-body container">
+    <!-- Filters Sidebar -->
+    <aside class="filters-sidebar">
+      <div class="filter-section">
+        <h4>Sort By</h4>
+        <div class="sort-options">
+          <label class="radio-option active-sort" onclick="sortFlights('price',this)">
+            <input type="radio" name="sort" checked/> Cheapest First
+          </label>
+          <label class="radio-option" onclick="sortFlights('duration',this)">
+            <input type="radio" name="sort"/> Shortest Duration
+          </label>
+          <label class="radio-option" onclick="sortFlights('depart',this)">
+            <input type="radio" name="sort"/> Earliest Departure
+          </label>
+        </div>
+      </div>
+      <div class="filter-section">
+        <h4>Stops</h4>
+        <label class="check-option"><input type="checkbox" checked onchange="filterFlights()"/> Non-stop</label>
+        <label class="check-option"><input type="checkbox" checked onchange="filterFlights()"/> 1 Stop</label>
+        <label class="check-option"><input type="checkbox" onchange="filterFlights()"/> 2+ Stops</label>
+      </div>
+      <div class="filter-section">
+        <h4>Price Range</h4>
+        <div class="price-range">
+          <input type="range" min="5000" max="100000" value="100000" id="priceRange" oninput="updatePriceFilter(this.value)"/>
+          <div class="range-labels">
+            <span>₹5,000</span>
+            <span id="priceMax">₹1,00,000</span>
+          </div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <h4>Departure Time</h4>
+        <div class="time-slots">
+          <div class="time-slot active-slot" onclick="toggleTimeSlot(this)"><i class="fas fa-sun"></i><span>Morning</span><small>6AM-12PM</small></div>
+          <div class="time-slot active-slot" onclick="toggleTimeSlot(this)"><i class="fas fa-cloud-sun"></i><span>Afternoon</span><small>12PM-6PM</small></div>
+          <div class="time-slot active-slot" onclick="toggleTimeSlot(this)"><i class="fas fa-moon"></i><span>Evening</span><small>6PM-12AM</small></div>
+          <div class="time-slot" onclick="toggleTimeSlot(this)"><i class="fas fa-star"></i><span>Night</span><small>12AM-6AM</small></div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <h4>Airlines</h4>
+        <label class="check-option"><input type="checkbox" checked/> IndiGo</label>
+        <label class="check-option"><input type="checkbox" checked/> Air India</label>
+        <label class="check-option"><input type="checkbox" checked/> Emirates</label>
+        <label class="check-option"><input type="checkbox" checked/> Vistara</label>
+        <label class="check-option"><input type="checkbox" checked/> SpiceJet</label>
+      </div>
+    </aside>
+
+    <!-- Flight Cards -->
+    <div class="flights-list">
+      <div class="results-info">
+        <span id="resultCount">5 flights found</span>
+        <div class="wishlist-note"><i class="fas fa-heart"></i> Save flights to wishlist</div>
+      </div>
+      <div id="flightCards"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE: BOOKING
+================================================================ -->
+<div id="page-booking" class="page">
+  <div class="page-header">
+    <div class="container">
+      <h2><i class="fas fa-ticket-alt"></i> Complete Your Booking</h2>
+      <div class="booking-steps">
+        <div class="step active"><span>1</span> Traveller Details</div>
+        <div class="step-line"></div>
+        <div class="step"><span>2</span> Seat Selection</div>
+        <div class="step-line"></div>
+        <div class="step"><span>3</span> Review & Pay</div>
+      </div>
+    </div>
+  </div>
+  <div class="booking-body container">
+    <div class="booking-main">
+      <!-- Traveller Form -->
+      <div class="booking-card" id="stepTraveller">
+        <h3><i class="fas fa-user"></i> Traveller 1 — Adult</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Title</label>
+            <select><option>Mr.</option><option>Mrs.</option><option>Ms.</option><option>Dr.</option></select>
+          </div>
+          <div class="form-group">
+            <label>First Name *</label>
+            <input type="text" placeholder="As on passport"/>
+          </div>
+          <div class="form-group">
+            <label>Last Name *</label>
+            <input type="text" placeholder="As on passport"/>
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date"/>
+          </div>
+          <div class="form-group">
+            <label>Nationality</label>
+            <select><option>Indian</option><option>American</option><option>British</option><option>UAE</option></select>
+          </div>
+          <div class="form-group">
+            <label>Passport Number</label>
+            <input type="text" placeholder="e.g. A1234567"/>
+          </div>
+        </div>
+        <h3 style="margin-top:2rem"><i class="fas fa-envelope"></i> Contact Details</h3>
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label>Email Address *</label>
+            <input type="email" placeholder="Booking confirmation will be sent here"/>
+          </div>
+          <div class="form-group">
+            <label>Mobile Number *</label>
+            <input type="tel" placeholder="+91 XXXXX XXXXX"/>
+          </div>
+          <div class="form-group">
+            <label>Alternate Number</label>
+            <input type="tel" placeholder="+91 XXXXX XXXXX"/>
+          </div>
+        </div>
+        <div class="add-ons">
+          <h3><i class="fas fa-suitcase"></i> Add-ons</h3>
+          <div class="addon-grid">
+            <label class="addon-card"><input type="checkbox"/><i class="fas fa-suitcase-rolling"></i><span>Extra Baggage</span><small>+₹1,200</small></label>
+            <label class="addon-card"><input type="checkbox"/><i class="fas fa-utensils"></i><span>Meal Preference</span><small>+₹450</small></label>
+            <label class="addon-card"><input type="checkbox"/><i class="fas fa-shield-alt"></i><span>Travel Insurance</span><small>+₹799</small></label>
+            <label class="addon-card"><input type="checkbox"/><i class="fas fa-wifi"></i><span>In-flight WiFi</span><small>+₹350</small></label>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="goToSeatSelection()">Continue to Seat Selection <i class="fas fa-arrow-right"></i></button>
+      </div>
+
+      <!-- Seat Selection -->
+      <div class="booking-card" id="stepSeat" style="display:none">
+        <h3><i class="fas fa-chair"></i> Select Your Seat</h3>
+        <div class="seat-legend">
+          <span><span class="seat-dot available"></span> Available</span>
+          <span><span class="seat-dot selected"></span> Selected</span>
+          <span><span class="seat-dot occupied"></span> Occupied</span>
+          <span><span class="seat-dot extra-legroom"></span> Extra Legroom</span>
+        </div>
+        <div class="seat-map" id="seatMap"></div>
+        <div class="selected-seat-info" id="selectedSeatInfo"></div>
+        <div class="seat-nav">
+          <button class="btn-secondary" onclick="goToTraveller()"><i class="fas fa-arrow-left"></i> Back</button>
+          <button class="btn-primary" onclick="goToReview()">Review Booking <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Summary -->
+    <aside class="booking-summary">
+      <div class="summary-card">
+        <h3><i class="fas fa-receipt"></i> Booking Summary</h3>
+        <div class="summary-flight" id="summaryFlight">
+          <div class="summ-row"><i class="fas fa-plane-departure"></i><div><div class="summ-label">Outbound</div><div class="summ-val" id="summRoute">DEL → DXB</div></div></div>
+          <div class="summ-row"><i class="fas fa-clock"></i><div><div class="summ-label">Duration</div><div class="summ-val" id="summDuration">3h 30m</div></div></div>
+          <div class="summ-row"><i class="fas fa-calendar"></i><div><div class="summ-label">Date</div><div class="summ-val" id="summDate">Sun, 15 Jun 2026</div></div></div>
+          <div class="summ-row"><i class="fas fa-couch"></i><div><div class="summ-label">Class</div><div class="summ-val" id="summClass">Economy</div></div></div>
+        </div>
+        <div class="price-breakdown">
+          <div class="price-row"><span>Base Fare (1 Adult)</span><span id="sumBaseFare">₹18,500</span></div>
+          <div class="price-row"><span>Taxes & Fees</span><span id="sumTax">₹2,960</span></div>
+          <div class="price-row"><span>Add-ons</span><span id="sumAddons">₹0</span></div>
+          <div class="price-row total"><span>Total Amount</span><span id="sumTotal">₹21,460</span></div>
+        </div>
+        <button class="btn-primary full-width" onclick="goToPayment()">Proceed to Payment <i class="fas fa-lock"></i></button>
+        <p class="secure-note"><i class="fas fa-lock"></i> Secured by 256-bit SSL encryption</p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE: PAYMENT
+================================================================ -->
+<div id="page-payment" class="page">
+  <div class="page-header">
+    <div class="container">
+      <h2><i class="fas fa-lock"></i> Secure Payment</h2>
+      <div class="booking-steps">
+        <div class="step done"><span><i class="fas fa-check"></i></span> Traveller Details</div>
+        <div class="step-line done-line"></div>
+        <div class="step done"><span><i class="fas fa-check"></i></span> Seat Selection</div>
+        <div class="step-line"></div>
+        <div class="step active"><span>3</span> Review & Pay</div>
+      </div>
+    </div>
+  </div>
+  <div class="payment-body container">
+    <div class="payment-main">
+      <div class="payment-card">
+        <h3><i class="fas fa-credit-card"></i> Payment Method</h3>
+        <div class="payment-tabs">
+          <button class="pay-tab active" onclick="setPayTab('card',this)"><i class="fas fa-credit-card"></i> Card</button>
+          <button class="pay-tab" onclick="setPayTab('upi',this)"><i class="fas fa-mobile-alt"></i> UPI</button>
+          <button class="pay-tab" onclick="setPayTab('netbanking',this)"><i class="fas fa-university"></i> Net Banking</button>
+          <button class="pay-tab" onclick="setPayTab('wallet',this)"><i class="fas fa-wallet"></i> Wallet</button>
+        </div>
+        <div id="payContent-card" class="pay-content active-pay">
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label>Card Number</label>
+              <div class="card-input-wrap">
+                <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)"/>
+                <i class="fab fa-cc-visa card-brand-icon" id="cardBrandIcon"></i>
+              </div>
+            </div>
+            <div class="form-group form-full">
+              <label>Cardholder Name</label>
+              <input type="text" placeholder="Name on card"/>
+            </div>
+            <div class="form-group">
+              <label>Expiry Date</label>
+              <input type="text" placeholder="MM / YY" maxlength="7"/>
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="password" placeholder="•••" maxlength="4"/>
+            </div>
+          </div>
+          <label class="check-option"><input type="checkbox"/> Save card for future bookings</label>
+        </div>
+        <div id="payContent-upi" class="pay-content">
+          <div class="form-group">
+            <label>UPI ID</label>
+            <input type="text" placeholder="yourname@upi"/>
+          </div>
+          <p class="upi-note">Enter your UPI ID and confirm the payment request on your UPI app.</p>
+        </div>
+        <div id="payContent-netbanking" class="pay-content">
+          <div class="bank-grid">
+            <div class="bank-card active-bank" onclick="selectBank(this)"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/SBI-logo.svg/100px-SBI-logo.svg.png" alt="SBI"/><span>SBI</span></div>
+            <div class="bank-card" onclick="selectBank(this)"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/HDFC_Bank_Logo.svg/100px-HDFC_Bank_Logo.svg.png" alt="HDFC"/><span>HDFC</span></div>
+            <div class="bank-card" onclick="selectBank(this)"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/ICICI_Bank_Logo.svg/100px-ICICI_Bank_Logo.svg.png" alt="ICICI"/><span>ICICI</span></div>
+            <div class="bank-card" onclick="selectBank(this)"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Axis_Bank_logo.svg/100px-Axis_Bank_logo.svg.png" alt="Axis"/><span>Axis</span></div>
+          </div>
+        </div>
+        <div id="payContent-wallet" class="pay-content">
+          <div class="bank-grid">
+            <div class="bank-card active-bank"><i class="fas fa-wallet" style="font-size:2rem;color:#5f2eea"></i><span>Paytm</span></div>
+            <div class="bank-card"><i class="fas fa-wallet" style="font-size:2rem;color:#00BAF2"></i><span>PhonePe</span></div>
+            <div class="bank-card"><i class="fas fa-wallet" style="font-size:2rem;color:#16a085"></i><span>Amazon Pay</span></div>
+          </div>
+        </div>
+
+        <button class="btn-primary full-width btn-pay" onclick="processPayment()">
+          <i class="fas fa-lock"></i> Pay ₹21,460 Securely
+        </button>
+        <p class="secure-note"><i class="fas fa-shield-alt"></i> 100% secure. We never store your card details.</p>
+      </div>
+    </div>
+    <aside class="booking-summary">
+      <div class="summary-card">
+        <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+        <div class="summary-flight">
+          <div class="summ-row"><i class="fas fa-plane-departure"></i><div><div class="summ-label">Route</div><div class="summ-val">DEL → DXB</div></div></div>
+          <div class="summ-row"><i class="fas fa-calendar"></i><div><div class="summ-label">Date</div><div class="summ-val">Sun, 15 Jun 2026</div></div></div>
+          <div class="summ-row"><i class="fas fa-user"></i><div><div class="summ-label">Passengers</div><div class="summ-val">1 Adult</div></div></div>
+          <div class="summ-row"><i class="fas fa-chair"></i><div><div class="summ-label">Seat</div><div class="summ-val" id="paymentSeat">14C</div></div></div>
+        </div>
+        <div class="price-breakdown">
+          <div class="price-row"><span>Base Fare</span><span>₹18,500</span></div>
+          <div class="price-row"><span>Taxes</span><span>₹2,960</span></div>
+          <div class="price-row total"><span>Total</span><span>₹21,460</span></div>
+        </div>
+      </div>
+      <div class="summary-card secure-badges">
+        <div class="badge-row"><i class="fas fa-lock"></i> SSL Secured</div>
+        <div class="badge-row"><i class="fas fa-shield-alt"></i> PCI-DSS Compliant</div>
+        <div class="badge-row"><i class="fas fa-undo"></i> Free Cancellation (24h)</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE: CONFIRMATION
+================================================================ -->
+<div id="page-confirmation" class="page">
+  <div class="confirmation-wrap container">
+    <div class="confirm-card">
+      <div class="confirm-icon"><i class="fas fa-check-circle"></i></div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your flight has been booked successfully. A confirmation has been sent to your email.</p>
+      <div class="booking-ref">
+        <span>Booking Reference</span>
+        <strong id="bookingRef">VYG-2026-84712</strong>
+      </div>
+      <div class="confirm-details">
+        <div class="confirm-row">
+          <div class="confirm-item">
+            <div class="ci-label">Flight</div>
+            <div class="ci-val" id="cfFlight">VYG 410</div>
+          </div>
+          <div class="confirm-item">
+            <div class="ci-label">Route</div>
+            <div class="ci-val" id="cfRoute">DEL → DXB</div>
+          </div>
+          <div class="confirm-item">
+            <div class="ci-label">Date</div>
+            <div class="ci-val" id="cfDate">Sun, 15 Jun 2026</div>
+          </div>
+          <div class="confirm-item">
+            <div class="ci-label">Departs</div>
+            <div class="ci-val" id="cfDep">06:45 AM</div>
+          </div>
+          <div class="confirm-item">
+            <div class="ci-label">Arrives</div>
+            <div class="ci-val" id="cfArr">09:15 AM</div>
+          </div>
+          <div class="confirm-item">
+            <div class="ci-label">Seat</div>
+            <div class="ci-val" id="cfSeat">14C</div>
+          </div>
+        </div>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn-primary" onclick="downloadTicket()"><i class="fas fa-download"></i> Download Ticket</button>
+        <button class="btn-secondary" onclick="showPage('dashboard')"><i class="fas fa-tachometer-alt"></i> Go to Dashboard</button>
+        <button class="btn-secondary" onclick="showPage('home')"><i class="fas fa-home"></i> Back to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE: LOGIN / SIGNUP
+================================================================ -->
+<div id="page-login" class="page">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="auth-brand"><i class="fas fa-paper-plane"></i> VOYAGE</div>
+      <h2>Your world,<br/>your journey.</h2>
+      <p>Join millions of travellers who book smarter with VOYAGE Airlines.</p>
+      <ul class="auth-perks">
+        <li><i class="fas fa-check-circle"></i> Exclusive member deals</li>
+        <li><i class="fas fa-check-circle"></i> Faster checkout</li>
+        <li><i class="fas fa-check-circle"></i> Booking history & e-tickets</li>
+        <li><i class="fas fa-check-circle"></i> Priority customer support</li>
+      </ul>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="loginTab" onclick="setAuthTab('login')">Login</button>
+          <button class="auth-tab" id="signupTab" onclick="setAuthTab('signup')">Sign Up</button>
+        </div>
+        <div id="loginForm" class="auth-form">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="you@example.com"/>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="pw-wrap">
+              <input type="password" placeholder="Your password" id="loginPw"/>
+              <i class="fas fa-eye pw-toggle" onclick="togglePw('loginPw',this)"></i>
+            </div>
+          </div>
+          <div class="auth-row">
+            <label class="check-option"><input type="checkbox"/> Remember me</label>
+            <a href="#" class="forgot-link">Forgot Password?</a>
+          </div>
+          <button class="btn-primary full-width" onclick="loginUser()">Login <i class="fas fa-arrow-right"></i></button>
+          <div class="divider"><span>or continue with</span></div>
+          <div class="social-auth">
+            <div id="googleLoginBtn" class="google-btn-container"></div>
+          </div>
+        </div>
+        <div id="signupForm" class="auth-form" style="display:none">
+          <div class="form-grid">
+            <div class="form-group"><label>First Name</label><input type="text" placeholder="John"/></div>
+            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Doe"/></div>
+          </div>
+          <div class="form-group"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
+          <div class="form-group"><label>Phone</label><input type="tel" placeholder="+91 XXXXX XXXXX"/></div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="pw-wrap">
+              <input type="password" placeholder="Minimum 8 characters" id="signupPw"/>
+              <i class="fas fa-eye pw-toggle" onclick="togglePw('signupPw',this)"></i>
+            </div>
+          </div>
+          <label class="check-option" style="margin-bottom:1rem"><input type="checkbox"/> I agree to the <a href="#">Terms & Privacy Policy</a></label>
+          <button class="btn-primary full-width" onclick="signupUser()">Create Account <i class="fas fa-arrow-right"></i></button>
+          <div class="divider"><span>or sign up with</span></div>
+          <div class="social-auth">
+            <div id="googleSignupBtn" class="google-btn-container"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE: DASHBOARD
+================================================================ -->
+<div id="page-dashboard" class="page">
+  <div class="page-header">
+    <div class="container">
+      <h2><i class="fas fa-tachometer-alt"></i> My Dashboard</h2>
+    </div>
+  </div>
+  <div class="dashboard-body container">
+    <aside class="dash-sidebar">
+      <div class="dash-profile">
+        <div class="dash-avatar"><i class="fas fa-user"></i></div>
+        <div class="dash-name">Rahul Sharma</div>
+        <div class="dash-email">rahul@example.com</div>
+      </div>
+      <nav class="dash-nav">
+        <a href="#" class="dash-link active" onclick="showDashTab('bookings',this)"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+        <a href="#" class="dash-link" onclick="showDashTab('wishlist',this)"><i class="fas fa-heart"></i> Wishlist</a>
+        <a href="#" class="dash-link" onclick="showDashTab('profile',this)"><i class="fas fa-user-edit"></i> Profile</a>
+        <a href="#" class="dash-link" onclick="showDashTab('settings',this)"><i class="fas fa-cog"></i> Settings</a>
+        <a href="#" class="dash-link logout-link" onclick="showPage('home')"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+    <div class="dash-content">
+      <!-- Bookings Tab -->
+      <div id="dash-bookings" class="dash-tab active-tab">
+        <div class="dash-stats">
+          <div class="stat-card"><i class="fas fa-ticket-alt"></i><div><span>12</span><p>Total Trips</p></div></div>
+          <div class="stat-card"><i class="fas fa-globe"></i><div><span>8</span><p>Countries Visited</p></div></div>
+          <div class="stat-card"><i class="fas fa-award"></i><div><span>Gold</span><p>Member Status</p></div></div>
+          <div class="stat-card"><i class="fas fa-coins"></i><div><span>4,250</span><p>Reward Points</p></div></div>
+        </div>
+        <h3>Recent Bookings</h3>
+        <div class="booking-list">
+          <div class="booking-item upcoming">
+            <div class="bi-status upcoming">Upcoming</div>
+            <div class="bi-route"><strong>DEL → DXB</strong><span>VYG 410</span></div>
+            <div class="bi-date"><i class="fas fa-calendar"></i> Sun, 15 Jun 2026 · 06:45 AM</div>
+            <div class="bi-class"><i class="fas fa-couch"></i> Economy · Seat 14C</div>
+            <div class="bi-ref">Ref: VYG-2026-84712</div>
+            <div class="bi-actions">
+              <button class="btn-sm"><i class="fas fa-download"></i> E-Ticket</button>
+              <button class="btn-sm btn-cancel"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+          </div>
+          <div class="booking-item completed">
+            <div class="bi-status completed">Completed</div>
+            <div class="bi-route"><strong>BOM → SIN</strong><span>VYG 282</span></div>
+            <div class="bi-date"><i class="fas fa-calendar"></i> Fri, 22 Mar 2026 · 11:30 PM</div>
+            <div class="bi-class"><i class="fas fa-couch"></i> Business · Seat 3A</div>
+            <div class="bi-ref">Ref: VYG-2026-31094</div>
+            <div class="bi-actions">
+              <button class="btn-sm"><i class="fas fa-download"></i> E-Ticket</button>
+              <button class="btn-sm"><i class="fas fa-star"></i> Rate Trip</button>
+            </div>
+          </div>
+          <div class="booking-item completed">
+            <div class="bi-status completed">Completed</div>
+            <div class="bi-route"><strong>DEL → LHR</strong><span>VYG 512</span></div>
+            <div class="bi-date"><i class="fas fa-calendar"></i> Mon, 10 Feb 2026 · 02:15 AM</div>
+            <div class="bi-class"><i class="fas fa-couch"></i> Economy · Seat 22F</div>
+            <div class="bi-ref">Ref: VYG-2026-10847</div>
+            <div class="bi-actions">
+              <button class="btn-sm"><i class="fas fa-download"></i> E-Ticket</button>
+              <button class="btn-sm"><i class="fas fa-star"></i> Rate Trip</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Wishlist Tab -->
+      <div id="dash-wishlist" class="dash-tab">
+        <h3>Saved Flights</h3>
+        <div class="wishlist-grid">
+          <div class="wish-card">
+            <div class="wish-img" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80')"></div>
+            <div class="wish-info"><h4>Bali, Indonesia</h4><p>From ₹28,000 · Return</p><button class="btn-sm" onclick="showPage('home')">Search Now</button></div>
+          </div>
+          <div class="wish-card">
+            <div class="wish-img" style="background-image:url('https://images.unsplash.com/photo-1503917988258-f87a78e3c995?w=400&q=80')"></div>
+            <div class="wish-info"><h4>Tokyo, Japan</h4><p>From ₹35,000 · Return</p><button class="btn-sm" onclick="showPage('home')">Search Now</button></div>
+          </div>
+        </div>
+      </div>
+      <!-- Profile Tab -->
+      <div id="dash-profile" class="dash-tab">
+        <h3>My Profile</h3>
+        <div class="booking-card" style="max-width:600px">
+          <div class="form-grid">
+            <div class="form-group"><label>First Name</label><input type="text" value="Rahul"/></div>
+            <div class="form-group"><label>Last Name</label><input type="text" value="Sharma"/></div>
+            <div class="form-group form-full"><label>Email</label><input type="email" value="rahul@example.com"/></div>
+            <div class="form-group"><label>Phone</label><input type="tel" value="+91 98765 43210"/></div>
+            <div class="form-group"><label>Nationality</label><select><option selected>Indian</option><option>Other</option></select></div>
+            <div class="form-group"><label>Passport No.</label><input type="text" value="P1234567"/></div>
+          </div>
+          <button class="btn-primary" style="margin-top:1.5rem" onclick="saveProfile()">Save Changes <i class="fas fa-save"></i></button>
+        </div>
+      </div>
+      <!-- Settings Tab -->
+      <div id="dash-settings" class="dash-tab">
+        <h3>Account Settings</h3>
+        <div class="booking-card" style="max-width:500px">
+          <div class="setting-row"><span>Email Notifications</span><label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label></div>
+          <div class="setting-row"><span>SMS Alerts</span><label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label></div>
+          <div class="setting-row"><span>Promotional Offers</span><label class="toggle"><input type="checkbox"/><span class="slider"></span></label></div>
+          <div class="setting-row"><span>Two-Factor Auth</span><label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label></div>
+          <div class="form-group" style="margin-top:2rem"><label>Change Password</label><input type="password" placeholder="New password"/></div>
+          <button class="btn-primary" style="margin-top:1rem">Update Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Payment Processing Overlay -->
+<div class="payment-overlay" id="paymentOverlay">
+  <div class="payment-processing">
+    <div class="processing-spinner"></div>
+    <h3>Processing Payment...</h3>
+    <p>Please do not close this window.</p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
